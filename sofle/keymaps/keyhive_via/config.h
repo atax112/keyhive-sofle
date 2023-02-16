@@ -16,8 +16,15 @@
   */
 
 #pragma once
+#undef EE_HANDS
+#undef MASTER_LEFT
+#undef MASTER_RIGHT
+#undef SPLIT_POINTING_ENABLE
+#undef POINTING_DEVICE_RIGHT
+
 #define EE_HANDS
 #define MASTER_LEFT
+//#define MASTER_RIGHT
 #define SPLIT_POINTING_ENABLE
 #define POINTING_DEVICE_RIGHT
 

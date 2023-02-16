@@ -92,3 +92,43 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 )
 
 };
+
+static bool scrolling_mode = false;
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    switch (get_highest_layer(state)) {
+        case _RAISE:  // If we're on the _RAISE layer enable scrolling mode
+            scrolling_mode = true;
+			//#ifdef POINTING_DEVICE_DRIVER_pimoroni_trackball
+				pimoroni_trackball_set_rgbw(0,0,0,150);
+                pimoroni_trackball_set_cpi(0.1);
+            //#else
+            //    pointing_device_set_cpi(64);
+            //#endif
+            break;
+        default:
+            if (scrolling_mode) {  // check if we were scrolling before and set disable if so
+                scrolling_mode = false;
+                pointing_device_set_cpi(8000);
+				//#ifdef POINTING_DEVICE_DRIVER_pimoroni_trackball
+					pimoroni_trackball_set_rgbw(0,0,0,0);
+                    pimoroni_trackball_set_cpi(1);
+                //#else
+                //    pointing_device_set_cpi(1024);
+                //	  pointing_device_set_cpi(32000); // higher scroll speed
+                //#endif
+            }
+            break;
+    }
+    return state;
+}
+
+report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    if (scrolling_mode) {
+        mouse_report.h = mouse_report.x;
+        mouse_report.v = -mouse_report.y;
+        mouse_report.x = 0;
+        mouse_report.y = 0;
+    }
+    return mouse_report;
+}
